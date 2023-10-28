@@ -1,36 +1,33 @@
-import { Component } from "react";
+import { useState } from 'react';
 import Notification from "./Notification/Notification";
 import Statistics from "./Statistics/Statistics";
 import FeedbackOptions from "./FeedbackOptions/FeedbackOptions";
 import Section from "./Section/Section";
 import { GOOD, NEUTRAL, BAD} from "../constants";
 
-export class App extends Component {
-  
-   state= {
+export const App = () => {
+  const [state, setState] = useState(
+    {
       [GOOD]: 0,
       [NEUTRAL]: 0,
       [BAD]: 0
     }
+  );
 
-  increment = (type) => {
-    this.setState(prevState => ({
-      [type]: prevState[type] + 1,
-    }));
+  const { good, neutral, bad } = state;
+
+  const increment = (type) => {
+    setState({...state, [type]: state[type] + 1});
   };
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
+  const countTotalFeedback = () => {
     return good + neutral + bad
   }
 
-  countPositiveFeedbackPercentage = () => {
-    const { good } = this.state;
-    return Math.round(good / this.countTotalFeedback() * 100)
+  const countPositiveFeedbackPercentage = () => {
+    return Math.round(good / countTotalFeedback() * 100)
   }
 
-  render() {
-    const { good, neutral, bad } = this.state;
     return (
       <div
         style={{
@@ -44,18 +41,18 @@ export class App extends Component {
         }}
       > 
         <Section title="Please leave feedback">
-          <FeedbackOptions options={Object.keys(this.state)} onLeaveFeedback={this.increment} />
+          <FeedbackOptions options={Object.keys(state)} onLeaveFeedback={increment} />
         </Section> 
         
         <Section 
           title="Statistics">
-            {this.countTotalFeedback() > 0 ? (
+            {countTotalFeedback() > 0 ? (
               <Statistics 
                 good={good} 
                 neutral={neutral} 
                 bad={bad} 
-                total={this.countTotalFeedback()} 
-                positivePercentage={this.countPositiveFeedbackPercentage()} 
+                total={countTotalFeedback()} 
+                positivePercentage={countPositiveFeedbackPercentage()} 
               />
             )
              : (
@@ -64,5 +61,4 @@ export class App extends Component {
         </Section>
       </div>
     );
-  }
 };
